@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务类型 - 公证翻译管理后台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <h2>公证翻译管理后台</h2>
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="nav-link">订单管理</a>
+            <a href="services.html" class="nav-link active">服务类型</a>
+            <a href="statistics.html" class="nav-link">数据统计</a>
+            <a href="settings.html" class="nav-link">系统设置</a>
+            <button class="btn btn-outline" onclick="logout()">退出登录</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="services-header">
+            <h1>服务类型</h1>
+            <p class="services-desc">管理公证翻译、签证等全部服务类型及价格，价格修改后立即生效</p>
+        </div>
+
+        <!-- 公证翻译服务 -->
+        <section class="services-section">
+            <h3 class="section-title">📄 公证翻译服务</h3>
+            <div class="services-table-container">
+                <table class="services-table">
+                    <thead>
+                        <tr>
+                            <th>服务类型</th>
+                            <th>类型代码</th>
+                            <th>基准价格（₸）</th>
+                            <th>订单数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notaryServicesBody">
+                        <tr><td colspan="5" class="text-center">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 签证服务 -->
+        <section class="services-section">
+            <h3 class="section-title">🛂 签证服务</h3>
+            <p class="section-desc">签证协助咨询与材料办理，费用通常线下确认</p>
+            <div class="services-table-container">
+                <table class="services-table">
+                    <thead>
+                        <tr>
+                            <th>签证类型</th>
+                            <th>类型代码</th>
+                            <th>参考价格（₸）</th>
+                            <th>订单数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="visaServicesBody">
+                        <tr><td colspan="5" class="text-center">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 附加费用 -->
+        <section class="services-section">
+            <h3 class="section-title">➕ 附加费用</h3>
+            <div class="services-table-container">
+                <table class="services-table">
+                    <thead>
+                        <tr>
+                            <th>费用项</th>
+                            <th>金额（₸）</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="extraFeesBody">
+                        <tr><td colspan="3" class="text-center">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 自定义类型（来自订单） -->
+        <section class="services-section">
+            <h3 class="section-title">📝 历史自定义类型</h3>
+            <p class="section-desc">用户选择「其他」时填写的类型，使用「其他类型基础价」</p>
+            <div class="services-table-container">
+                <table class="services-table">
+                    <thead>
+                        <tr>
+                            <th>自定义类型名称</th>
+                            <th>订单数</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customTypesBody">
+                        <tr><td colspan="2" class="text-center">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+    <script src="services.js"></script>
+</body>
+</html>
