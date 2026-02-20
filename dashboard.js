@@ -144,24 +144,39 @@ async function loadOrders() {
         
         let visaOrders = [];
         if (visaRes.data && visaRes.data.length) {
-            visaOrders = visaRes.data.map(order => ({
-                id: order.id.substring(0, 8) + '...',
-                fullId: order.id,
-                customerName: order.user_id || '签证用户',
-                customerPhone: '',
-                serviceType: '签证邀请函',
-                serviceDetail: `签证服务 - ${order.visa_category_label || order.visa_category}`,
-                amount: 0,
-                orderTime: formatDateTime(order.created_at),
-                status: mapStatusToDisplay(order.status),
-                urgency: 'normal',
-                files: [],
-                notes: order.notes || '',
-                address: '',
-                deliveryFormat: 'DIGITAL',
-                rawOrder: { ...order, isVisa: true },
-                isVisa: true
-            }));
+            visaOrders = visaRes.data.map(order => {
+                // 调试：打印订单数据
+                console.log('签证订单原始数据:', order);
+                console.log('customer_name:', order.customer_name);
+                console.log('phone_or_whatsapp:', order.phone_or_whatsapp);
+                console.log('user_id:', order.user_id);
+                
+                // 确保正确读取字段（支持多种可能的字段名）
+                const customerName = order.customer_name || order.customerName || order.user_id || '签证用户';
+                const customerPhone = order.phone_or_whatsapp || order.phoneOrWhatsApp || '';
+                
+                console.log('最终 customerName:', customerName);
+                console.log('最终 customerPhone:', customerPhone);
+                
+                return {
+                    id: order.id.substring(0, 8) + '...',
+                    fullId: order.id,
+                    customerName: customerName,
+                    customerPhone: customerPhone,
+                    serviceType: '签证邀请函',
+                    serviceDetail: `签证服务 - ${order.visa_category_label || order.visa_category}`,
+                    amount: 0,
+                    orderTime: formatDateTime(order.created_at),
+                    status: mapStatusToDisplay(order.status),
+                    urgency: 'normal',
+                    files: [],
+                    notes: order.notes || '',
+                    address: '',
+                    deliveryFormat: 'DIGITAL',
+                    rawOrder: { ...order, isVisa: true },
+                    isVisa: true
+                };
+            });
         }
         
         ordersData = [...notaryOrders, ...visaOrders];
@@ -427,6 +442,30 @@ async function viewOrderDetail(orderId) {
     
     selectedOrderId = order.fullId || order.id; // 使用完整ID
     selectedOrderIsVisa = !!order.isVisa || (order.rawOrder && order.rawOrder.isVisa);
+    
+    // 如果是签证订单，确保从 rawOrder 读取最新的 customer_name 和 phone_or_whatsapp
+    if (selectedOrderIsVisa && order.rawOrder) {
+        console.log('查看订单详情 - rawOrder:', order.rawOrder);
+        console.log('rawOrder.customer_name:', order.rawOrder.customer_name);
+        console.log('rawOrder.phone_or_whatsapp:', order.rawOrder.phone_or_whatsapp);
+        
+        // 优先使用 customer_name，如果没有则用 user_id（但显示警告）
+        if (order.rawOrder.customer_name) {
+            order.customerName = order.rawOrder.customer_name;
+        } else if (order.rawOrder.user_id && order.customerName === order.rawOrder.user_id) {
+            // 如果 customerName 还是 user_id，说明数据库里没有 customer_name
+            console.warn('警告：订单缺少 customer_name，显示的是 user_id');
+        }
+        
+        if (order.rawOrder.phone_or_whatsapp) {
+            order.customerPhone = order.rawOrder.phone_or_whatsapp;
+        } else {
+            console.warn('警告：订单缺少 phone_or_whatsapp');
+        }
+        
+        console.log('最终显示 - customerName:', order.customerName);
+        console.log('最终显示 - customerPhone:', order.customerPhone);
+    }
     
     // 公证翻译订单且未报价时，拉取该服务类型的基准价格
     let basePriceForOrder = null;
